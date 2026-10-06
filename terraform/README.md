@@ -5,32 +5,40 @@
 This directory contains the Terraform Infrastructure as Code (IaC)
 for the DevOps internship project.
 
-## Role of Terraform
+Terraform is responsible for repeatable cloud infrastructure
+provisioning.
 
-Terraform is responsible for repeatable infrastructure provisioning.
+## AWS Infrastructure
 
-Server configuration and application deployment will be handled by
-later stages of the project using Ansible and Kubernetes.
+Terraform currently provisions:
 
-## Project Context
+- AWS VPC
+- Public subnet
+- Internet Gateway
+- Public route table
+- Internet route
+- Route table association
+- Application security group
+- EC2 application server
 
-Week 10 established the application CI/CD and DevSecOps pipeline:
+## Architecture
 
-GitHub -> Jenkins -> Test -> Docker Build -> Security Scan -> Docker Hub
-
-Week 11 begins the Infrastructure as Code stage.
-
-## Terraform Structure
-
-- main.tf       - Main infrastructure configuration
-- variables.tf  - Input variables
-- outputs.tf    - Infrastructure outputs
-- README.md     - Terraform documentation
-
-## Current Status
-
-Terraform installation verified successfully.
-
-Terraform version: 1.15.8
-
-Infrastructure resources have not yet been provisioned.
+```text
+Terraform
+    |
+    v
+AWS VPC
+    |
+    +--> Public Subnet
+    |       |
+    |       +--> Route Table
+    |       |       |
+    |       |       +--> Internet Gateway
+    |       |
+    |       +--> Security Group
+    |               |
+    |               +--> TCP 3000
+    |
+    +--> EC2 t3.micro
+            |
+            +--> Amazon Linux 2023
