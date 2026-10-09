@@ -1,172 +1,77 @@
-\# Week 11 - Terraform Infrastructure Architecture
+# Week 11 - Terraform Infrastructure Architecture
 
+## Purpose
 
+This document describes the AWS infrastructure provisioned using Terraform
+and the server configuration automated using Ansible.
 
-\## Purpose
+## Terraform Responsibilities
 
+Terraform provisions and manages the underlying AWS infrastructure.
 
+The current infrastructure includes:
 
-This document defines the proposed cloud infrastructure architecture
+- AWS VPC
+- Public subnet
+- Internet Gateway
+- Public route table and route association
+- Security group
+- EC2 instance
+- IAM role and instance profile for AWS Systems Manager
+- S3 bucket for Ansible-related file transfers
+- S3 security settings, including encryption and public access blocking
 
-for the DevOps internship project.
+## Ansible Responsibilities
 
+Ansible configures the EC2 instance through AWS Systems Manager.
 
+The application server role currently:
 
-The architecture is based on the project requirement for Infrastructure
+- Installs Docker
+- Enables and starts the Docker service
+- Creates the application directory at `/opt/devops-ecommerce`
+- Verifies the Docker installation
 
-as Code using Terraform and cloud deployment.
+## Infrastructure Flow
 
+1. Terraform provisions the AWS infrastructure.
+2. AWS Systems Manager provides access to the EC2 instance.
+3. Ansible configures the server.
+4. Application deployment and later platform components will be added as required.
 
+## Responsibility Separation
 
-\## Terraform Responsibility
+### Terraform
+AWS infrastructure provisioning and lifecycle management.
 
+### Ansible
+Server configuration and software installation.
 
+### Docker
+Application containerization.
 
-Terraform will provision the underlying cloud infrastructure.
-
-
-
-Terraform will not be responsible for application configuration or
-
-application deployment.
-
-
-
-Those responsibilities belong to later stages of the project.
-
-
-
-\## Proposed AWS Architecture
-
-
-
-The proposed infrastructure consists of:
-
-
-
-\- AWS VPC
-
-\- Public subnet
-
-\- Internet Gateway
-
-\- Route table
-
-\- Security group
-
-\- EC2 server
-
-
-
-\## Infrastructure Flow
-
-
-
-Terraform
-
-&#x20;   |
-
-&#x20;   v
-
-AWS VPC
-
-&#x20;   |
-
-&#x20;   v
-
-Public Subnet
-
-&#x20;   |
-
-&#x20;   v
-
-EC2 Server
-
-&#x20;   |
-
-&#x20;   +--> Ansible configuration
-
-&#x20;   |
-
-&#x20;   +--> Kubernetes/application deployment
-
-
-
-\## Responsibility Separation
-
-
-
-\### Terraform
-
-
-
-Infrastructure provisioning.
-
-
-
-\### Ansible
-
-
-
-Server configuration and software setup.
-
-
-
-\### Kubernetes
-
-
-
-Application orchestration and deployment.
-
-
-
-\### Jenkins
-
-
-
+### Jenkins
 CI/CD automation.
 
+### Kubernetes
+Application orchestration, as part of the broader project.
 
+### Prometheus, Grafana and ELK
+Monitoring, visualization and centralized logging, as part of the broader project.
 
-\### Prometheus and Grafana
+## Current Status
 
+- Terraform infrastructure provisioned and managed through Terraform state.
+- EC2 access through AWS Systems Manager verified.
+- Ansible playbook syntax checked successfully.
+- Ansible playbook executed successfully.
+- Docker installed, enabled and running on the EC2 instance.
+- Application directory created and Docker version verified.
 
+## Safety Notes
 
-Monitoring and observability.
+Terraform state files are required to track managed resources and must not be
+deleted manually.
 
-
-
-\### ELK
-
-
-
-Centralized logging.
-
-
-
-\## Safety
-
-
-
-AWS resources will not be provisioned until AWS credentials,
-
-Terraform configuration, and the planned resources have been
-
-reviewed.
-
-
-
-Terraform plan will be reviewed before any infrastructure is created.
-
-
-
-\## Current Status
-
-
-
-Terraform local proof-of-concept completed.
-
-
-
-AWS infrastructure has not yet been provisioned.
-
+Review Terraform plans before applying infrastructure changes.
+AWS credentials and secret values must not be committed to Git.
