@@ -19,12 +19,48 @@
     group: root
     mode: "0755"
 
+- name: Copy application files to EC2
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../app/"
+    dest: "{{ app_directory }}/"
+    owner: root
+    group: root
+    mode: preserve
+
+- name: Build application Docker image
+  community.docker.docker_image:
+    name: "{{ app_image }}"
+    source: build
+    build:
+      path: "{{ app_directory }}"
+    force_source: true
+
+- name: Run application container
+  community.docker.docker_container:
+    name: "{{ app_container_name }}"
+    image: "{{ app_image }}"
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "{{ app_port }}:3000"
+    env:
+      APP_VERSION: "{{ app_version }}"
+      PORT: "3000"
+
 - name: Verify Docker installation
   ansible.builtin.command:
     cmd: docker --version
-  register: docker_version
   changed_when: false
 
-- name: Display Docker version
+- name: Verify application container is running
+  community.docker.docker_container_info:
+    name: "{{ app_container_name }}"
+  register: app_container_info
+  failed_when: >-
+    not app_container_info.exists or
+    app_container_info.container.State.Running != true
+
+- name: Display deployment result
   ansible.builtin.debug:
-    msg: "{{ docker_version.stdout }}"
+    msg: "Application container is running on port {{ app_port }}"
+

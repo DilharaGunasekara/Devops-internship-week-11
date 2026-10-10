@@ -1,0 +1,16 @@
+FROM node:24-alpine
+
+WORKDIR /app
+
+COPY --chown=node:node package.json ./
+COPY --chown=node:node app.js test.js ./
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV APP_VERSION=v1
+
+USER node
+
+EXPOSE 3000
+
+CMD ["node", "app.js"]
