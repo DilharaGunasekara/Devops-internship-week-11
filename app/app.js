@@ -18,3 +18,4 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 
 module.exports = server;
+<- Application directory created and Docker version Week 12 CI trigger test -->
