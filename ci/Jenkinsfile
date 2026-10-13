@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('app') {
+                    bat 'npm install'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                dir('app') {
+                    bat 'npm test'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t devops-ecommerce:latest app'
+            }
+        }
+
+        stage('Verify Docker Image') {
+            steps {
+                bat 'docker image inspect devops-ecommerce:latest'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI pipeline completed successfully.'
+        }
+
+        failure {
+            echo 'CI pipeline failed. Review the stage logs above.'
+        }
+    }
+}
