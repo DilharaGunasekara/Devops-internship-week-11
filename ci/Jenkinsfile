@@ -3,12 +3,22 @@ pipeline {
 
     options {
         timestamps()
+        disableConcurrentBuilds()
+        skipDefaultCheckout(true)
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Check Tools') {
+            steps {
+                bat 'node --version'
+                bat 'npm --version'
+                bat 'docker --version'
             }
         }
 
@@ -43,11 +53,16 @@ pipeline {
 
     post {
         success {
-            echo 'CI pipeline completed successfully.'
+            echo 'SUCCESS: CI pipeline completed.'
+            echo 'Tests passed and the Docker image was built.'
         }
 
         failure {
-            echo 'CI pipeline failed. Review the stage logs above.'
+            echo 'FAILURE: CI pipeline failed. Review the stage logs.'
+        }
+
+        always {
+            echo 'Week 12 CI pipeline execution finished.'
         }
     }
 }
