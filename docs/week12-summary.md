@@ -1,49 +1,91 @@
-# Week 12 — Jenkins Continuous Integration Pipeline
+# Week 12 – Jenkins CI Pipeline
 
 ## 1. Objective
 
-Implement an automated Continuous Integration (CI) pipeline for the existing Node.js application using Jenkins, GitHub, and Docker.
+The objective of Week 12 was to implement a Jenkins Continuous Integration (CI) pipeline that automatically checks out application source code, verifies the required tools, runs automated tests, builds a Docker image, and verifies the generated image.
 
 ## 2. Technologies Used
 
-- Jenkins
-- Git and GitHub
-- Node.js and npm
-- Docker Desktop
-- Windows and Ubuntu on WSL
+- Jenkins – CI pipeline automation
+- Git and GitHub – Source code management and version control
+- Node.js and npm – Application runtime and test execution
+- Docker – Application container image creation and verification
+- WSL Ubuntu – Development environment
+- Windows – Jenkins agent environment
 
 ## 3. Pipeline Architecture
 
-Developer changes are committed and pushed to GitHub. Jenkins detects the repository change and executes the CI pipeline on the Windows agent.
+The pipeline uses the application repository hosted on GitHub. Jenkins checks out the source code and executes the pipeline defined in `ci/Jenkinsfile`.
 
-The pipeline checks the required tools, installs application dependencies, executes automated tests, builds a Docker image, and verifies the resulting image.
+The pipeline follows these stages:
 
-## 4. Pipeline Stages
+1. **Checkout:** Retrieves the source code from the configured Git repository.
+2. **Check Tools:** Checks the installed Node.js, npm, and Docker versions.
+3. **Install Dependencies:** Runs `npm install` inside the application directory.
+4. **Run Tests:** Executes `npm test` to verify the application.
+5. **Build Docker Image:** Builds the Docker image named `devops-ecommerce:latest`.
+6. **Verify Docker Image:** Runs `docker image inspect` to verify the generated image.
 
-1. Checkout source code from GitHub.
-2. Verify Node.js, npm, and Docker availability.
-3. Install application dependencies.
-4. Execute automated tests using `npm test`.
-5. Build the `devops-ecommerce:latest` Docker image.
-6. Inspect the Docker image to verify successful creation.
+## 4. Pipeline Configuration
 
-## 5. Automated Trigger
+The pipeline is defined in `ci/Jenkinsfile` and uses a Declarative Pipeline structure.
 
-The Jenkins job is configured to detect source-code changes and start a build automatically. The trigger was tested by pushing a change from the WSL terminal to the GitHub repository.
+Additional configuration includes:
+- Timestamps in the Jenkins console log.
+- Prevention of concurrent pipeline executions.
+- Explicit source code checkout to avoid duplicate default checkout.
+- Success and failure messages through post-build actions.
 
-## 6. Test Results
+## 5. Testing and Verification
 
-Record the actual outcome of the final Jenkins build.
+The application tests were executed successfully.
 
-- Automated tests: [Pass/Fail]
-- Docker image build: [Pass/Fail]
-- Docker image verification: [Pass/Fail]
-- Jenkins build result: [SUCCESS/FAILURE]
+Test output:
+
+```text
+Running Week 09 automated tests...
+All automated tests passed successfully!
+```
+
+The Docker image was also built successfully from the application Dockerfile and verified using `docker image inspect`.
+
+The generated image is tagged `devops-ecommerce:latest`. Its configuration uses the non-root `node` user and exposes port `3000`.
+
+The Jenkins console output confirmed:
+
+```text
+SUCCESS: CI pipeline completed.
+Tests passed and the Docker image was built.
+Week 12 CI pipeline execution finished.
+Finished: SUCCESS
+```
+
+## 6. Automation
+
+The Jenkins job is configured to monitor the Git repository for source code changes. A Git push can trigger the pipeline automatically, allowing changes to be checked without manually running every CI stage.
+
+The automatic trigger should be demonstrated and documented with a successful build initiated by a Git repository change.
 
 ## 7. Cost Management
 
-The pipeline runs locally on the existing Windows Jenkins service and Docker Desktop. No EC2 instance is required for the Week 12 CI workflow.
+The Week 12 CI workflow was executed using the local development environment, Jenkins, and Docker Desktop. No AWS EC2 instance or cloud deployment was required for these CI checks.
+
+The Docker image was built locally and was not pushed to a remote container registry as part of this pipeline.
 
 ## 8. Outcome
 
-The project demonstrates automated source checkout, application testing, Docker image creation, image verification, and CI execution triggered by repository changes.
+The Week 12 Jenkins CI pipeline completed successfully. Automated tests passed, the Docker image was built, and the generated image was verified.
+
+This implementation demonstrates an automated CI workflow that can validate application changes and prepare a Docker image for a later deployment stage.
+
+## 9. Evidence
+
+The following evidence should be saved with the internship project:
+
+- Jenkins pipeline stage view showing a successful build.
+- Jenkins console output ending with `Finished: SUCCESS`.
+- Terminal output showing the automated tests passing.
+- Docker output showing the image build and image listing.
+- GitHub commit history showing the Week 12 pipeline and documentation.
+
+
